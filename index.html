@@ -47,10 +47,22 @@
         boxElement.animate({top: `${newPosition[1]}vh`, left: `${newPosition[0]}vw`}, {duration: 200, fill: "forwards"});
     }
 
+    function gitLink() {
+        navigator.clipboard.writeText("git@github.com:Blorptopia/llorkcir.git");
+        document.querySelector("body").style.background = "green";
+
+        setInterval(() => {
+            document.querySelector("body").style.background = "white";
+        }, 750);
+        setInterval(() => {
+            location.href = "https://www.youtube.com/watch?v=zKJ6xGVzrnI";
+        }, 10_000);
+    }
+
     document.addEventListener("keydown", onKeyPress);
 </script>
 
 <div id="box">
     <h1>h</h1>
 </div>
-<a href="https://www.youtube.com/watch?v=zKJ6xGVzrnI" id="github-link">Git link</a>
+<a href="javascript:gitLink()" id="github-link">Git link (click)</a>
