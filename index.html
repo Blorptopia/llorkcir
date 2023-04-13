@@ -1,0 +1,56 @@
+<style>
+    body {
+        margin: 0;
+    }
+    #box {
+        height: 5rem;
+        width: 5rem;
+        background: #f00;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        position: absolute;
+    }
+</style>
+
+<script>
+    function onKeyPress(event) {
+        const boxElement = document.querySelector("#box");
+        const oldPosition = [parseInt(boxElement.dataset.x) || 0, parseInt(boxElement.dataset.y) || 0];
+        let newPosition = oldPosition.map(a => a);
+
+        if (["ArrowUp", "w"].includes(event.key)) {
+            newPosition[1] -= 1;
+            console.log("up");
+        }
+        if (["ArrowDown", "s"].includes(event.key)) {
+            newPosition[1] += 1;
+            console.log("down");
+        }
+        if (["ArrowLeft", "a"].includes(event.key)) {
+            newPosition[0] -= 1;
+            console.log("left");
+        }
+        if (["ArrowRight", "d"].includes(event.key)) {
+            newPosition[0] += 1;
+            console.log("right");
+        }
+        console.log({newPosition, oldPosition});
+
+        boxElement.dataset.x = newPosition[0];
+        boxElement.dataset.y = newPosition[1];
+
+        event.preventDefault();
+
+        boxElement.animate({top: `${newPosition[1]}vh`, left: `${newPosition[0]}vw`}, {duration: 200, fill: "forwards"});
+    }
+
+    document.addEventListener("keydown", onKeyPress);
+</script>
+
+<div id="box">
+    <h1>h</h1>
+</div>
+<a href="https://www.youtube.com/watch?v=zKJ6xGVzrnI" id="github-link">Git link</a>
