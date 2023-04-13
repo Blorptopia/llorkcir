@@ -1,0 +1,31 @@
+{
+	"nodes":[
+		{"id":"6b697d623e3d8caa","x":-140,"y":-260,"width":250,"height":60,"type":"text","text":"Bruker trykker på WASD"},
+		{"id":"1dea934bf9394ba4","x":-140,"y":-140,"width":250,"height":58,"type":"text","text":"Hent gammel posisjon fra dataset"},
+		{"id":"bf6f4ab63a6e46b4","x":-140,"y":0,"width":250,"height":60,"type":"text","text":"Gjør om til array av number"},
+		{"id":"25d1f33181cd4148","x":-140,"y":137,"width":250,"height":60,"type":"text","text":"Kopier posisjon til newPosition"},
+		{"id":"97dae7d566660b4f","x":-140,"y":272,"width":250,"height":60,"type":"text","text":"Trykker bruker på W"},
+		{"id":"271f407303709596","x":211,"y":270,"width":250,"height":60,"type":"text","text":"Endre newPosition"},
+		{"type":"text","text":"Trykker bruker på S","id":"98bea046c70f3718","x":-140,"y":380,"width":250,"height":60},
+		{"type":"text","text":"Trykker bruker på A","id":"134913356876a327","x":-140,"y":500,"width":250,"height":60},
+		{"id":"7c85f823f7cddb67","x":-140,"y":620,"width":250,"height":60,"type":"text","text":"Trykker bruker på D"},
+		{"id":"54b93e1414fdcb5a","x":-140,"y":740,"width":250,"height":60,"type":"text","text":"Endre dataset position"},
+		{"id":"a488c67e9331a2db","x":-140,"y":864,"width":250,"height":60,"type":"text","text":"Animer at boks flytter"}
+	],
+	"edges":[
+		{"id":"b875c8d2af75a18f","fromNode":"6b697d623e3d8caa","fromSide":"bottom","toNode":"1dea934bf9394ba4","toSide":"top"},
+		{"id":"3a4e97dac75fff34","fromNode":"1dea934bf9394ba4","fromSide":"bottom","toNode":"bf6f4ab63a6e46b4","toSide":"top"},
+		{"id":"ad3bad2e883c05c1","fromNode":"bf6f4ab63a6e46b4","fromSide":"bottom","toNode":"25d1f33181cd4148","toSide":"top"},
+		{"id":"4d24d40ad3a33906","fromNode":"25d1f33181cd4148","fromSide":"bottom","toNode":"97dae7d566660b4f","toSide":"top"},
+		{"id":"1d897e47bfbae7a3","fromNode":"97dae7d566660b4f","fromSide":"right","toNode":"271f407303709596","toSide":"left"},
+		{"id":"e50c33c998914c18","fromNode":"97dae7d566660b4f","fromSide":"bottom","toNode":"98bea046c70f3718","toSide":"top"},
+		{"id":"51234403e79e1acc","fromNode":"98bea046c70f3718","fromSide":"right","toNode":"271f407303709596","toSide":"left"},
+		{"id":"26c605e448e64d61","fromNode":"98bea046c70f3718","fromSide":"bottom","toNode":"134913356876a327","toSide":"top"},
+		{"id":"097c434776eb8022","fromNode":"134913356876a327","fromSide":"right","toNode":"271f407303709596","toSide":"left"},
+		{"id":"d8e62fe8e4b55f89","fromNode":"134913356876a327","fromSide":"bottom","toNode":"7c85f823f7cddb67","toSide":"top"},
+		{"id":"4497666da19052f8","fromNode":"7c85f823f7cddb67","fromSide":"right","toNode":"271f407303709596","toSide":"left"},
+		{"id":"4e846d142baa8e80","fromNode":"7c85f823f7cddb67","fromSide":"bottom","toNode":"54b93e1414fdcb5a","toSide":"top"},
+		{"id":"0846e23642c1c147","fromNode":"271f407303709596","fromSide":"right","toNode":"54b93e1414fdcb5a","toSide":"top"},
+		{"id":"67318bdac14c6bfc","fromNode":"54b93e1414fdcb5a","fromSide":"bottom","toNode":"a488c67e9331a2db","toSide":"top"}
+	]
+}
