@@ -3,8 +3,8 @@
         margin: 0;
     }
     #box {
-        height: 5rem;
-        width: 5rem;
+        height: 5%;
+        width: 5%;
         background: #f00;
 
         display: flex;
@@ -38,6 +38,10 @@
             console.log("right");
         }
         console.log({newPosition, oldPosition});
+
+
+        newPosition[0] = Math.max(0, Math.min(95, newPosition[0]));
+        newPosition[1] = Math.max(0, Math.min(95, newPosition[1]));
 
         boxElement.dataset.x = newPosition[0];
         boxElement.dataset.y = newPosition[1];
