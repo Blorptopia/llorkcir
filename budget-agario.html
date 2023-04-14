@@ -1,0 +1,217 @@
+<script>
+    const players = {};
+    const ws = new WebSocket("ws://localhost:3002");
+    const boardSize = 500;
+    const drawBoardSize = 500;
+    const currentPlayerId = Math.floor(Math.random() * 10_000);
+    const colors = [
+        "#FF0000",
+        "#FFFF00",
+        "#FFFFFF",
+        "#00FF00",
+        "#0000FF",
+        "#00FFFF",
+        "#FF00FF"
+    ];
+    const death = false;
+
+    function sendPacket(packet) {
+        ws.send(JSON.stringify(packet));
+    }
+
+    ws.addEventListener("open", () => {
+        ws.send("game");
+        const size = 20;
+        sendPacket({
+            id: currentPlayerId,
+            positionTop: Math.floor(Math.random() * (boardSize - size)),
+            positionLeft: Math.floor(Math.random() * (boardSize - size)),
+            size: size,
+            alive: true
+        });
+    });
+    ws.addEventListener("message", (message) => {
+        const newPlayer = JSON.parse(message.data);
+        players[newPlayer.id] = newPlayer;
+        rerender();
+
+        const currentPlayer = players[currentPlayerId];
+        if (!currentPlayer.alive) {
+            ws.close();
+            document.getElementById("board").remove();
+            let gameOverElement = document.createElement("h1");
+            gameOverElement.innerText = "Game over.";
+            document.getElementById("game-container").appendChild(gameOverElement);
+        }
+    })
+    function isInDrawBounds(positionTop, positionLeft) {
+        let boundedPositionTop = Math.min(Math.max(positionTop, 0), drawBoardSize);
+        let boundedPositionLeft = Math.min(Math.max(positionLeft, 0), drawBoardSize);
+
+        return positionTop === boundedPositionTop && positionLeft === boundedPositionLeft;
+    }
+    function isInGameBounds(positionTop, positionLeft) {
+        let boundedPositionTop = Math.min(Math.max(positionTop, 0), boardSize);
+        let boundedPositionLeft = Math.min(Math.max(positionLeft, 0), boardSize);
+
+        return positionTop === boundedPositionTop && positionLeft === boundedPositionLeft;
+    }
+
+    function debugText(text) {
+        const debugPosElement = document.getElementById("debug-pos");
+        if (debugPosElement === null) {
+            return;
+        }
+        debugPosElement.innerText = text;
+    }
+    function rerender() {
+        // Update debug pos
+        const currentPlayer = players[currentPlayerId];
+        <!-- debugPosElement.innerText = `${currentPlayer.positionTop}:${currentPlayer.positionLeft}`; -->
+
+        const canvas = document.getElementById("board");
+        const context = canvas.getContext("2d");
+
+        // Clear
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Set size
+        context.height = drawBoardSize;
+        context.width = drawBoardSize;
+
+        const {positionTop, positionLeft} = currentPlayer;
+
+        Object.values(players).forEach((player) => {
+            const relativeTop = (player.positionTop - positionTop) + drawBoardSize / 2;
+            const relativeLeft = (player.positionLeft - positionLeft) + drawBoardSize / 2;
+
+            const shouldDraw = isInDrawBounds(relativeTop, relativeLeft);
+
+            if (!shouldDraw || !player.alive) {
+                return;
+            }
+            context.fillStyle = colors[player.id % colors.length];
+
+            const drawSize = player.size / 2
+
+            <!-- const centerRelativeTop = relativeTop + drawSize; -->
+            <!-- const centerRelativeLeft = relativeLeft + drawSize; -->
+
+            const drawFromLeft = relativeLeft - drawSize;
+            const drawFromTop = relativeTop - drawSize;
+
+            context.fillRect(drawFromLeft, drawFromTop, drawSize * 2, drawSize * 2);
+        });
+    }
+
+
+    function onKeyPress(event) {
+        const currentPlayer = players[currentPlayerId];
+        const oldPositionTop = currentPlayer.positionTop;
+        const oldPositionLeft = currentPlayer.positionLeft;
+        if (["ArrowUp", "w"].includes(event.key)) {
+            currentPlayer.positionTop -= 1;
+            event.preventDefault();
+        }
+        if (["ArrowDown", "s"].includes(event.key)) {
+            currentPlayer.positionTop += 1;
+            event.preventDefault();
+        }
+        if (["ArrowLeft", "a"].includes(event.key)) {
+            currentPlayer.positionLeft -= 1;
+            event.preventDefault();
+        }
+        if (["ArrowRight", "d"].includes(event.key)) {
+            currentPlayer.positionLeft += 1;
+            event.preventDefault();
+        }
+
+        if (!isInGameBounds(currentPlayer.positionTop, currentPlayer.positionLeft)) {
+            console.log("Out of bounds. Ignoring");
+            currentPlayer.positionTop = oldPositionTop;
+            currentPlayer.positionLeft = oldPositionLeft;
+        } else {
+            sendPacket(currentPlayer);
+            checkCollisions();
+        }
+
+    }
+
+    function checkCollisions() {
+        const currentPlayer = players[currentPlayerId];
+        const currentPlayerTop = currentPlayer.positionTop - currentPlayer.size / 2;
+        const currentPlayerLeft = currentPlayer.positionLeft - currentPlayer.size / 2;
+        const collidingPlayers = Object.values(players).filter((player) => {
+            const playerTop = player.positionTop - player.size / 2;
+            const playerLeft = player.positionLeft - player.size / 2;
+            if (
+                currentPlayerTop < playerTop + player.size &&
+                currentPlayerTop + currentPlayer.size > playerTop &&
+                currentPlayerLeft < playerLeft + player.size &&
+                currentPlayer.size + currentPlayerLeft > playerLeft
+            ) {
+                return true;
+            }
+            
+            return false;
+        });
+        if (collidingPlayers.length !== 1) {
+
+            const maxSize = Math.max(...collidingPlayers.map(player => player.size));
+
+            collidingPlayers.forEach((player) => {
+                if (player.size === maxSize) {
+                    return;
+                }
+                if (death) {
+                    player.alive = false;
+                } else {
+                    player.size -= 1;
+
+                    if (player.size === 0) {
+                        player.alive = false;
+                    }
+                }
+                sendPacket(player);
+            });
+        }
+
+    }
+
+    setInterval(() => {
+        const currentPlayer = players[currentPlayerId];
+
+        if (currentPlayer.alive) {
+            currentPlayer.size += 1;
+            sendPacket(currentPlayer);
+            checkCollisions();
+        }
+    }, 1000);
+
+    document.addEventListener("keydown", onKeyPress);
+</script>
+<style>
+    body {
+        background: #121212;
+        margin: 0;
+    }
+    #board {
+        height: 500px;
+        width: 500px;
+        background: #232323;
+    }
+    #game-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+    h1 {
+        color: #fff;
+    }
+</style>
+
+<div id="game-container">
+    <!-- <h1 id="debug-pos">0:0</h1> -->
+    <canvas id="board" height="500" width="500"/>
+</div>
